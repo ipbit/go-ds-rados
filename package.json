@@ -1,0 +1,23 @@
+{
+  "author": "bjzhang",
+  "bugs": {
+    "url": "github.com/ipfs/go-ds-rados"
+  },
+  "gx": {
+    "dvcsimport": "github.com/ipfs/go-ds-rados"
+  },
+  "gxDependencies": [
+    {
+      "author": "jbenet",
+      "hash": "QmaRb5yNXKonhbkpNxNawoydk4N6es6b4fPj19sjEKsh5D",
+      "name": "go-datastore",
+      "version": "3.4.0"
+    }
+  ],
+  "gxVersion": "0.12.1",
+  "language": "go",
+  "license": "",
+  "name": "go-ds-rados",
+  "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
+  "version": "0.0.0"
+}
