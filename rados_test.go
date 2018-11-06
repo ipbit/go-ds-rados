@@ -199,3 +199,27 @@ func TestDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestGetSize(t *testing.T) {
+	ds, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	if err != nil {
+		t.Fatal(err)
+	}
+	key, val := datastore.NewKey("/foo"), []byte("bar")
+	err = ds.Put(key, val)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	size, err := ds.GetSize(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if size != len("bar") {
+		t.Fail()
+	}
+	err = ds.Delete(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

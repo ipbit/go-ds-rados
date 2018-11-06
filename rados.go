@@ -170,6 +170,31 @@ func (ds *Datastore) Has(key datastore.Key) (exists bool, err error) {
 	return
 }
 
+func (ds *Datastore) GetSize(key datastore.Key) (size int, err error) {
+	ds.mu.Lock()
+	defer ds.mu.Unlock()
+	ioctx, err := ds.conn.OpenIOContext(ds.pool)
+	if err != nil {
+		size = -1
+		return
+	}
+	defer ioctx.Destroy()
+	var stat rados.ObjectStat
+	stat, err = ioctx.Stat(key.String())
+	if err != nil {
+		size = -1
+		if err == rados.RadosErrorNotFound {
+			err = datastore.ErrNotFound
+			return
+		}
+		return
+	} else {
+		size = int(stat.Size)
+	}
+	return
+
+}
+
 func (ds *Datastore) Batch() (datastore.Batch, error) {
 	return datastore.NewBasicBatch(ds), nil
 }
