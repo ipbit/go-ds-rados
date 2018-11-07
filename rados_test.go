@@ -5,11 +5,12 @@ import (
 	"fmt"
 	datastore "github.com/ipfs/go-datastore"
 	dsq "github.com/ipfs/go-datastore/query"
+	"os"
 	"testing"
 )
 
 func TestPutGetBytes(t *testing.T) {
-	ds, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	ds, err := newOrAbort(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +26,7 @@ func TestPutGetBytes(t *testing.T) {
 }
 
 func TestBasicQuery(t *testing.T) {
-	ds, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	ds, err := newOrAbort(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,13 +72,13 @@ var testcases = map[string]string{
 }
 
 func TestQuery(t *testing.T) {
-	d, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	ds, err := newOrAbort(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	addTestCases(t, d, testcases)
+	addTestCases(t, ds, testcases)
 
-	rs, err := d.Query(dsq.Query{Prefix: "/a/", KeysOnly: true})
+	rs, err := ds.Query(dsq.Query{Prefix: "/a/", KeysOnly: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +93,7 @@ func TestQuery(t *testing.T) {
 
 	// test offset and limit
 
-	rs, err = d.Query(dsq.Query{
+	rs, err = ds.Query(dsq.Query{
 		Prefix:   "/a/",
 		Offset:   2,
 		Limit:    2,
@@ -106,20 +107,20 @@ func TestQuery(t *testing.T) {
 		"/a/b/d",
 		"/a/c",
 	}, rs)
-	removeTestCases(t, d, testcases)
+	removeTestCases(t, ds, testcases)
 }
 
-func addTestCases(t *testing.T, d *Datastore, testcases map[string]string) {
+func addTestCases(t *testing.T, ds *Datastore, testcases map[string]string) {
 	for k, v := range testcases {
 		dsk := datastore.NewKey(k)
-		if err := d.Put(dsk, []byte(v)); err != nil {
+		if err := ds.Put(dsk, []byte(v)); err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	for k, v := range testcases {
 		dsk := datastore.NewKey(k)
-		v2, err := d.Get(dsk)
+		v2, err := ds.Get(dsk)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -129,10 +130,10 @@ func addTestCases(t *testing.T, d *Datastore, testcases map[string]string) {
 	}
 }
 
-func removeTestCases(t *testing.T, d *Datastore, testcases map[string]string) {
+func removeTestCases(t *testing.T, ds *Datastore, testcases map[string]string) {
 	for k, _ := range testcases {
 		dsk := datastore.NewKey(k)
-		if err := d.Delete(dsk); err != nil {
+		if err := ds.Delete(dsk); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -161,7 +162,7 @@ func expectMatches(t *testing.T, expect []string, actualR dsq.Results) {
 }
 
 func TestPutGetDeleteEmpty(t *testing.T) {
-	ds, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	ds, err := newOrAbort(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,7 +182,7 @@ func TestPutGetDeleteEmpty(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	ds, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	ds, err := newOrAbort(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -201,7 +202,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestGetSize(t *testing.T) {
-	ds, err := NewDatastore("/etc/ceph/ceph.conf", "ipfs")
+	ds, err := newOrAbort(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -222,4 +223,15 @@ func TestGetSize(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func newOrAbort(t *testing.T) (*Datastore, error) {
+	confPath := os.Getenv("CEPH_CONF")
+	pool := os.Getenv("CEPH_POOL")
+	ds, err := NewDatastore(confPath, pool)
+	if err != nil {
+		t.Log("could not connect to a redis instance")
+		t.SkipNow()
+	}
+	return ds, err
 }
