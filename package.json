@@ -12,6 +12,12 @@
       "hash": "QmaRb5yNXKonhbkpNxNawoydk4N6es6b4fPj19sjEKsh5D",
       "name": "go-datastore",
       "version": "3.4.0"
+    },
+    {
+      "author": "magik6k",
+      "hash": "QmbdFveSZQFqLNB9VXwaj4WFEX424h1tU2gqcTCZxN5oDT",
+      "name": "go-ceph",
+      "version": "1.0.0"
     }
   ],
   "gxVersion": "0.12.1",
@@ -19,5 +25,6 @@
   "license": "",
   "name": "go-ds-rados",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "0.0.1"
+  "version": "0.0.2"
 }
+
