@@ -15,9 +15,9 @@
     },
     {
       "author": "magik6k",
-      "hash": "QmbdFveSZQFqLNB9VXwaj4WFEX424h1tU2gqcTCZxN5oDT",
+      "hash": "QmXwmoK592XCeAoM2E6zdJNg4Q555dbC4MvTGSrnaGhqAt",
       "name": "go-ceph",
-      "version": "1.0.0"
+      "version": "1.0.2"
     }
   ],
   "gxVersion": "0.12.1",
